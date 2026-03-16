@@ -1,5 +1,5 @@
-from pydantic import BaseModel 
-
+from pydantic import BaseModel , Field
+from typing import Optional
 class Info(BaseModel):
     timestamp: str
     signal_id: str
@@ -7,13 +7,14 @@ class Info(BaseModel):
     reported_lat: float
     reported_lon: float
     signal_type: str
-    priority_level: int
+    priority_level: int = Field(default=99)
+    distance_from_last_point :int = 0 
 
 class Attack(BaseModel):
     timestamp: str
     attack_id: str
     entity_id: str
-    weapon_type: str
+    weapon_type: str | None = None
 
 class Damage(BaseModel):
     timestamp: str
@@ -26,30 +27,31 @@ class Validator():
         self.logger = my_logger
         self.their_logger = their_logger
 
-    def validate_info(data:dict)-> None | str:
+    def validate_info(data:dict)-> dict | str:
         try:
-            Info.model_validate(data)
+           return Info.model_validate(data)
             
         except Exception as e:
             return str(e)
     
-    def validate_attack(data:dict)->None | str:
+    def validate_attack(data:dict)->dict | str:
         try:
-            Attack.model_validate(data)
+            return Attack.model_validate(data)
         except Exception as e:
             return str(e)
         
-    def validate_damage(data:dict)->None | str:
+    def validate_damage(data:dict)->dict | str:
         try:
-            Damage.model_validate(data)
+           return  Damage.model_validate(data)
         except Exception as e:
             return str(e)
         
     def validate(self,data:dict,topic:str):
         if topic == "damage":
             return self.validate_damage(data)
-        if topic == "info":
+        if topic == "intel":
             return self.validate_info(data)
         
         return self.validate_attack(data)
  
+
