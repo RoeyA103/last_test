@@ -48,6 +48,8 @@ class KafkaConsumerService():
                             callback(val=val,topic=topic)
 
                         except json.decoder.JSONDecodeError as e:
+
+                            callback(topic=topic,erro=e)
                             self.logger.error(f"KafkaConsumer - json error on:{val}")
                             self.their_logger(level="error", message=f"KafkaConsumer - json error on:{val}", extra_info=None)
 

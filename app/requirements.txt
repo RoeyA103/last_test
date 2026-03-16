@@ -1,2 +1,3 @@
-confluent-kafka
+kafka-python-ng==2.2.3
 elasticsearch
+pydantic

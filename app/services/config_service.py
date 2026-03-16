@@ -4,6 +4,8 @@ class Config():
     def __init__(self):
         self.BOOT_STRP_SERVERS = os.getenv("BOOT_STRP_SERVERS","http://localhost:9092")
         self.ELASTIC_HOST = os.getenv("ELASTIC_HOST","")
-        self.TOPICS = os.getenv("TOPICS")
+        self.TOPICS = ["intel","attack","damage"]
+        self.PRODUCER_TOPIC = os.getenv("PRODUCER_TOPIC","intel_signals_dlq")
+        self.MONGO_HOTS = os.getenv("MONGO_HOTS","monodb://localhost:27017")
 
         
