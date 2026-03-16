@@ -76,10 +76,10 @@ class MongoService():
             collection = self._get_collection(collection=collection)
 
             query_filter = { "entity_id" : entity_id }
-            update_operation = updated_filed
+            update_operation = { "$set" : updated_filed}
             result = collection.update_one(query_filter, update_operation)
 
-            if result.modified_count == 0:
+            if result.modified_count == 1:
                 self.logger.info(f"MongoService - doc updeted : {entity_id}")
                 self.their_logger(level="info", message=f"MongoService - doc updeted : {entity_id}", extra_info={"entity_id":entity_id})
 

@@ -45,17 +45,17 @@ class KafkaConsumerService():
                             self.their_logger(level="info", message=f"KafkaConsumer - got msg from :{topic}",
                                                extra_info={"entity_id":val["entity_id"],"topic":topic})
                             
-                            callback(val=val,topic=topic)
+                            callback(topic=topic,val=val)
 
                         except json.decoder.JSONDecodeError as e:
 
-                            callback(topic=topic,erro=e)
+                            callback(topic=topic,error=e)
                             self.logger.error(f"KafkaConsumer - json error on:{val}")
                             self.their_logger(level="error", message=f"KafkaConsumer - json error on:{val}", extra_info=None)
 
             except Exception as e:
-                self.logger.error(f"KafkaConsumer - error in proseesing msg:{e}")
-                self.their_logger(level="error", message=f"KafkaConsumer - error in proseesing msg:{e}", extra_info=None)
+                self.logger.error(f"menager - error in proseesing msg:{e}")
+                self.their_logger(level="error", message=f"menager - error in proseesing msg:{e}", extra_info=None)
 
 
 

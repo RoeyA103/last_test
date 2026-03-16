@@ -1,22 +1,20 @@
 import logging
 
 class Logger():
-    def __init__(self,app_name):
-        self.logger = None
-        self.app_name= app_name
+    def __init__(self, app_name: str):
+        self.logger = logging.getLogger(app_name)
+        self.logger.setLevel(logging.DEBUG)
 
-        self._create_logger
+        if not self.logger.handlers:  
+            ch = logging.StreamHandler()
+            ch.setLevel(logging.DEBUG)
 
-    def _create_logger(self):
-        logger = logging.getLogger(self.app_name)
-        logger.setLevel(logging.DEBUG)
-        sh = logging.StreamHandler()
-        sh.setLevel(logging.DEBUG)
-        f = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        sh.setFormatter(f)
-        logger.addHandler(sh)
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
+            ch.setFormatter(formatter)
 
-        self.logger = logger
+            self.logger.addHandler(ch)
 
     def get_logger(self):
         return self.logger

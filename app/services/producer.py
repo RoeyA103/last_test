@@ -7,12 +7,12 @@ class Producer():
         self.their_logger = their_logger
         self.boot_strap_servers = boot_strap_servers
         self.topic = topic
-        self.producer = self._get_producer
+        self.producer = self._get_producer()
 
     def _get_producer(self):
         try:
             producer = KafkaProducer(
-                bootstrap_servers=self.bootstrap_servers,
+                bootstrap_servers=self.boot_strap_servers,
                 value_serializer=lambda v: v if isinstance(v, bytes) else json.dumps(v).encode("utf-8")
             )
 
@@ -27,7 +27,7 @@ class Producer():
             self.producer.flush()
 
         except Exception as e:
-            self.logger.info(f"Producer - could not sent msg:{e}")
+            self.logger.error(f"Producer - could not sent msg:{e}")
             self.their_logger(level="error", message=f"Producer - could not sent msg:{e}", extra_info={"msg":msg})
 
 

@@ -27,20 +27,20 @@ class Validator():
         self.logger = my_logger
         self.their_logger = their_logger
 
-    def validate_info(data:dict)-> dict | str:
+    def validate_info(self,data:dict)-> dict | str:
         try:
            return Info.model_validate(data)
             
         except Exception as e:
             return str(e)
     
-    def validate_attack(data:dict)->dict | str:
+    def validate_attack(self,data:dict)->dict | str:
         try:
             return Attack.model_validate(data)
         except Exception as e:
             return str(e)
         
-    def validate_damage(data:dict)->dict | str:
+    def validate_damage(self,data:dict)->dict | str:
         try:
            return  Damage.model_validate(data)
         except Exception as e:
