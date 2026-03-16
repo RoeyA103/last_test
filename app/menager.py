@@ -26,10 +26,21 @@ class Menager():
 
         return EARTH_RADIUS_KM * c
     
+
+    def target_is_destroyed(self,entity_id:str) -> bool:
+        res = self.mongo.get_doc(entity_id = entity_id,collection='intel')
+        if res:
+            if res["status"] == 'destroyed':
+                return True
+        return False
+
     def handel_intel(self,val:dict):
         if not self.mongo.get_doc(entity_id = val['entity_id'],collection='intel'):
             doc = self.validator.validate(data=val,topic="intel")
             self.mongo.save_doc(doc=doc.model_dump(),collection='intel')
+
+        elif self.target_is_destroyed(entity_id=val['entity_id']):
+            self.producer.produce_error(msg={"topic":'intel',"error":f"{val['"entity_id"']} is allready destroyed"})
         
         else:
             old_doc = self.mongo.get_doc(entity_id = val['entity_id'],collection='intel')
@@ -45,16 +56,27 @@ class Menager():
     def handel_attack(self,val):
         if not self.mongo.get_doc(entity_id = val['entity_id'],collection='attack'):
             self.mongo.update_doc(updated_filed={'status':'attacked'},entity_id=val['entity_id'],collection='intel')
-        self.mongo.save_doc(doc=val,collection='attack')
 
-        self.thier_logger(level="info", message=f"manager - handel attack msg", extra_info=val)
+        elif self.target_is_destroyed(entity_id=val['entity_id']):
+            self.producer.produce_error(msg={"topic":'attack',"error":f"{val['"entity_id"']} is allready destroyed"})
+
+        else:
+        
+            self.mongo.save_doc(doc=val,collection='attack')
+
+            self.thier_logger(level="info", message=f"manager - handel attack msg", extra_info=val)
 
     def handel_damage(self,val:dict):
-        status = val["result"]
-        self.mongo.update_doc(self,updated_filed={'status':status},entity_id=val['entity_id'],collection='intel')
-        self.mongo.save_doc(doc=val,collection='damage')
 
-        self.thier_logger(level="info", message=f"manager - handel damage msg", extra_info=val)
+        if self.target_is_destroyed(entity_id=val['entity_id']):
+            self.producer.produce_error(msg={"topic":'damage',"error":f"{val['"entity_id"']} is allready destroyed"})
+
+        else:
+            status = val["result"]
+            self.mongo.update_doc(self,updated_filed={'status':status},entity_id=val['entity_id'],collection='intel')
+            self.mongo.save_doc(doc=val,collection='damage')
+
+            self.thier_logger(level="info", message=f"manager - handel damage msg", extra_info=val)
 
     def handel_event(self,topic,val=None,error=None):
         if error:                                               #if the consumer rais json error means the data is currapt
@@ -79,4 +101,4 @@ class Menager():
     def run(self):
         self.consumer.run(callback=self.handel_event)
 
-a = {"a":1}
+
