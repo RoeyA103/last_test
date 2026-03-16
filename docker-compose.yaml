@@ -76,16 +76,14 @@ services:
       start_period: 60s
 
   digital_hunter:
-    build:
-      context: ./app
-      dockerfile: ./app/Dockerfile
+    build: ./app
     environment:
       - BOOT_STRP_SERVERS=http://kafka:9092
       - ELASTIC_HOST=http://elasticsearch:9200
       - PRODUCER_TOPIC=intel_signals_dlq
       - MONGO_HOTS=monodb://mongodb:27017
       - MONGO_DB=intels
-      
+
     depends_on:
       kafka:
         condition: service_healthy
